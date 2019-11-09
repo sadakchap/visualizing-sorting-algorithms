@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="top-list">
+                <li><a href="">Sort !</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="grid-main">
+        <aside class="sidebar" id="left">
+            <button id="newArray">Generate a Random Array</button>
+            <form method="POST">
+                <label for="len">Array Length & speed
+                    <input type="range" class="slider" id="myRange" min="4" max="200" value="7">
+                </label>
+            </form>
+        </aside>
+
+
+        <div id="center">
+        </div>
+
+        <aside class="sidebar" id="right">
+            <div class="sorting-list">
+                <div class="algoname">Merge Sort</div>
+                <div class="algoname">Insertion Sort</div>
+                <div class="algoname">Quick Sort</div>
+                <div class="algoname">Bubble Sort</div>
+                <div class="algoname">Heap Sort</div>
+            </div>
+            <button onclick="sort();" id="sort" >Start</button>
+
+        </aside>
+    </div>
+    <footer>
+        <!-- <h1 id="try">Hello world</h1> -->
+    </footer>
+    <script src="script.js"></script>
+    <!-- <script src="try.js"></script> -->
+
+</body>
+</html>
+
+
