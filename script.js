@@ -23,6 +23,11 @@ for (const a of algoList){
     })
 }
 
+function changeBackToNormal(divArr, n){
+    for(let x = 0; x<n ; x++){
+        divArr.style.background = '#f00';
+    }
+}
 
 
 function makeSlides(arr){
@@ -67,6 +72,32 @@ function getRandomArray(){
 
 getRandomArray(); //calling for initail  
 
+async function swapi(arr, i, j, ms){
+    a1 = arr[i];
+    a2 = arr[j];
+    // changing colors
+    a1.style.background = '#077d7d';
+    a2.style.background = '#077d7d';
+    await timer(ms);
+    // swapping divs heights
+    b = a1.style.height;
+    a1.style.height = a2.style.height;
+    a2.style.height = b;
+    // changing color after swapping
+    a1.style.background = '#b509a0';
+    a2.style.background = '#b509a0';
+    await timer(ms);
+    // changing back to normal
+    a1.style.background = '#f00';
+    a2.style.background = '#f00';
+}
+
+function backToNormal(arr, n){
+    for(let x=0; x<n; x++){
+        arr[x].style.background = '#f00';
+    }
+}
+
 async function bubbleSort(n, divArr, ms){
     for(let i=0; i< n-1; i++){
         var c = false;
@@ -74,28 +105,21 @@ async function bubbleSort(n, divArr, ms){
             
             if (parseInt(divArr[j].style.height) > parseInt(divArr[j+1].style.height))
             {
-                a1 = divArr[j];
-                a2 = divArr[j+1];
-                // changing colors
-                a1.style.background = '#077d7d';
-                a2.style.background = '#077d7d';
-                await timer(ms);
-                // swapping divs heights
-                b = a1.style.height;
-                a1.style.height = a2.style.height;
-                a2.style.height = b;
+                await swapi(divArr, j, j+1, ms);
                 c= true;
-                // changing color after swapping
-                a1.style.background = '#b509a0';
-                a2.style.background = '#b509a0';
-                await timer(ms);
-                // changing back to normal
-                a1.style.background = '#f00';
-                a2.style.background = '#f00';
             }
             
         }
+        // changing color since this div is in right place now
+        divArr[j].style.background = '#0f0';
+        
         if (!c){
+            // all array is sorted now
+            for(let x=0; x<i; x++){
+                divArr[x].style.background = '#0f0';
+            }
+            await timer(ms);
+            backToNormal(divArr, n);
             break;
         }
     }
@@ -115,23 +139,7 @@ async function heapify(divArr, n, i, ms){
 
     if (largest != i) 
     { 
-        a1 = divArr[i];
-        a2 = divArr[largest];
-        // changing colors
-        a1.style.background = '#077d7d';
-        a2.style.background = '#077d7d';
-        await timer(ms);
-        let b = a1.style.height;
-        a1.style.height = a2.style.height;
-        a2.style.height = b;
-        // changing color after swapping
-        a1.style.background = '#b509a0';
-        a2.style.background = '#b509a0';
-        await timer(ms);
-        // changing back to normal
-        a1.style.background = '#f00';
-        a2.style.background = '#f00';
-
+        await swapi(divArr, i, largest, ms);
         await heapify(divArr, n, largest, ms); 
     } 
 }
@@ -142,26 +150,17 @@ async function heapSort(n, divArr, ms){
     
     for (let i=n-1; i>=0; i--) 
     { 
-        a1 = divArr[0];
-        a2 = divArr[i];
-        // changing colors
-        a1.style.background = '#077d7d';
-        a2.style.background = '#077d7d';
-        await timer(ms );
-        let b = a1.style.height;
-        a1.style.height = a2.style.height;
-        a2.style.height = b;
-        // changing color after swapping
-        a1.style.background = '#b509a0';
-        a2.style.background = '#b509a0';
-        await timer(ms );
-        // changing back to normal
-        a1.style.background = '#0f0';
-        a2.style.background = '#0f0';
-
+        await swapi(divArr, 0, i, ms);
+        // this div is sorted so green
+        divArr[i].style.background = '#0f0';
         await heapify(divArr, i, 0, ms ); 
     } 
+    await timer(ms);
+    backToNormal(divArr, n);
 }
+
+///////////////////////////////////////////
+
 
 async function merge(arr,  l,  m, r, ms) 
 { 
@@ -232,6 +231,7 @@ async function qucikSort(divArr, l, h, ms){
 
 async function parition(divArr, l, h, ms){
 
+    divArr[h].style.background = '#ff0';
     let pi = parseInt(divArr[h].style.height);  
  
     let i = (l - 1)  // Index of smaller element
@@ -291,6 +291,7 @@ async function parition(divArr, l, h, ms){
     // divArr[h].style.height = b;
     // await timer(ms);
     // swap arr[i + 1] and arr[high])
+    
     return (i + 1)
 }
 
@@ -361,9 +362,10 @@ function sort(){
 }
 
 //todo
-// ii. make a helper function for swapping and changing colors
+// ii. make a helper function for swapping and changing colors -- DRY
 // i. correctly implement change colors when swapping or changing in  insertion,  merge sort
 // 1. generate only unique random values
 // 2. good coloring on slides
 // 3. Disable "sort" btn and all other things once it has started sorting 
 // 4. DONE --- implement merge sort
+// 5. DONE --- correct implemented bubble and heap
