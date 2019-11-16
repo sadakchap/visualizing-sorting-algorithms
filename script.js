@@ -98,6 +98,39 @@ function backToNormal(arr, n){
     }
 }
 
+async function qucikSort(divArr, l, h, ms){
+    if(l<h){
+        pi = await parition(divArr, l, h, ms)
+        await qucikSort(divArr, l, pi-1, ms);
+        await qucikSort(divArr, pi+1, h, ms);
+    }
+    for(let x=0; x<=h; x++){
+        divArr[x].style.background = '#0f0';
+    }
+}
+
+async function parition(divArr, l, h, ms){
+
+    divArr[h].style.background = '#ff0'; // yellow key, pivot color
+    let pi = parseInt(divArr[h].style.height);  
+ 
+    let i = (l - 1)  // Index of smaller element
+
+    for (j = l; j <= h- 1; j++)
+    {
+        // If current element is smaller than the pivot
+        if (parseInt(divArr[j].style.height) < pi)
+        {
+            i++;
+            await swapi(divArr, i, j, ms);          
+        }
+    }
+
+    await swapi(divArr, i+1, h, ms); 
+    divArr[h].style.background = '#f00';
+    return (i + 1);
+}
+
 async function bubbleSort(n, divArr, ms){
     for(let i=0; i< n-1; i++){
         var c = false;
@@ -112,14 +145,12 @@ async function bubbleSort(n, divArr, ms){
         }
         // changing color since this div is in right place now
         divArr[j].style.background = '#0f0';
-        
+
         if (!c){
             // all array is sorted now
             for(let x=0; x<i; x++){
                 divArr[x].style.background = '#0f0';
             }
-            await timer(ms);
-            backToNormal(divArr, n);
             break;
         }
     }
@@ -154,9 +185,7 @@ async function heapSort(n, divArr, ms){
         // this div is sorted so green
         divArr[i].style.background = '#0f0';
         await heapify(divArr, i, 0, ms ); 
-    } 
-    await timer(ms);
-    backToNormal(divArr, n);
+    }
 }
 
 ///////////////////////////////////////////
@@ -221,85 +250,12 @@ async function mergeSort(arr,  l,  r, ms)
 	} 
 } 
     
-async function qucikSort(divArr, l, h, ms){
-    if(l<h){
-        pi = await parition(divArr, l, h, ms)
-        await qucikSort(divArr, l, pi-1, ms);
-        await qucikSort(divArr, pi+1, h, ms);
-    }
-}
-
-async function parition(divArr, l, h, ms){
-
-    divArr[h].style.background = '#ff0';
-    let pi = parseInt(divArr[h].style.height);  
- 
-    let i = (l - 1)  // Index of smaller element
-
-    for (j = l; j <= h- 1; j++)
-    {
-        // If current element is smaller than the pivot
-        if (parseInt(divArr[j].style.height) < pi)
-        {
-            i++;
-            a1 = divArr[i];
-            a2 = divArr[j];
-            // changing colors
-            a1.style.background = '#077d7d';
-            a2.style.background = '#077d7d';
-            await timer(ms);
-            // swapping divs heights
-            b = a1.style.height;
-            a1.style.height = a2.style.height;
-            a2.style.height = b;
-            c= true;
-            // changing color after swapping
-            a1.style.background = '#b509a0';
-            a2.style.background = '#b509a0';
-            await timer(ms);
-            // changing back to normal
-            a1.style.background = '#f00';
-            a2.style.background = '#f00';
-
-            // let b = divArr[i].style.height;
-            // divArr[i].style.height = divArr[j].style.height;
-            // divArr[j].style.height = b;
-        
-        }
-    }
-    a1 = divArr[i+1];
-    a2 = divArr[h];
-    // changing colors
-    a1.style.background = '#077d7d';
-    a2.style.background = '#077d7d';
-    await timer(ms);
-    // swapping divs heights
-    b = a1.style.height;
-    a1.style.height = a2.style.height;
-    a2.style.height = b;
-    c= true;
-    // changing color after swapping
-    a1.style.background = '#b509a0';
-    a2.style.background = '#b509a0';
-    await timer(ms);
-    // changing back to normal
-    a1.style.background = '#f00';
-    a2.style.background = '#f00';
-
-    // let b = divArr[i+1].style.height;
-    // divArr[i+1].style.height = divArr[h].style.height;
-    // divArr[h].style.height = b;
-    // await timer(ms);
-    // swap arr[i + 1] and arr[high])
-    
-    return (i + 1)
-}
 
 async function insertionSort(arr, n, ms){
     let x, key, y;
     for(x=1;x<n;x++){
 
-        arr[x].style.background = '#000';
+        arr[x].style.background = '#ff0';
         key = arr[x].style.height;
         await timer(ms);
         y = x - 1;
@@ -311,7 +267,7 @@ async function insertionSort(arr, n, ms){
             y= y-1;
         }
         arr[y+1].style.height = key ;
-        arr[y+1].style.background = '#000';
+        arr[y+1].style.background = '#ff0';
         await timer(ms);
 
         arr[x].style.background = '#f00';
@@ -319,7 +275,7 @@ async function insertionSort(arr, n, ms){
     }
 }
 
-function sort(){
+async function sort(){
 
     document.getElementById('sort').setAttribute("disabled", "disabled"); // disabling sort btn 
 
@@ -342,19 +298,23 @@ function sort(){
     }
     
     if(currentAlgo === 'bubble'){
-        bubbleSort(n, divArr, ms);
+        await bubbleSort(n, divArr, ms);
     }else if(currentAlgo === 'heap'){
-        heapSort(n, divArr, ms);
+        await heapSort(n, divArr, ms);
     }else if(currentAlgo === 'merge'){
-        mergeSort(divArr, 0, n-1, ms);    // mergeSort(arr, l, r, ms);
+        await mergeSort(divArr, 0, n-1, ms);    // mergeSort(arr, l, r, ms);
 
     }else if(currentAlgo === "insertion"){
-        insertionSort(divArr, n, ms);
+        await insertionSort(divArr, n, ms);
     }else if(currentAlgo === 'quick'){
-        qucikSort(divArr, 0, n-1, ms);   // quickSort(arr, l, h, ms);
+        await qucikSort(divArr, 0, n-1, ms);
     }else{
         alert('how did you clicked that button');
     }
+
+
+    await timer(1000);
+    backToNormal(divArr, n);
 
     document.getElementById("sort").removeAttribute("disabled"); // enabling sort btn again 
 
@@ -368,4 +328,4 @@ function sort(){
 // 2. good coloring on slides
 // 3. Disable "sort" btn and all other things once it has started sorting 
 // 4. DONE --- implement merge sort
-// 5. DONE --- correct implemented bubble and heap
+// 5. DONE --- correct implemented QUICK, BUBBLE, HEAP
