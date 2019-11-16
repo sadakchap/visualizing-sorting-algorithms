@@ -23,13 +23,6 @@ for (const a of algoList){
     })
 }
 
-function changeBackToNormal(divArr, n){
-    for(let x = 0; x<n ; x++){
-        divArr.style.background = '#f00';
-    }
-}
-
-
 function makeSlides(arr){
     centerBox = document.getElementById('center');
 
