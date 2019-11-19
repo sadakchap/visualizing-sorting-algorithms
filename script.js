@@ -91,6 +91,31 @@ function backToNormal(arr, n){
     }
 }
 
+
+async function insertionSort(arr, n, ms){
+    let x, key, y;
+    for(x=1;x<n;x++){
+
+        arr[x].style.background = '#ff0';
+        key = arr[x].style.height;
+        await timer(ms);
+        y = x - 1;
+        while( y>=0 && parseInt(arr[y].style.height) > parseInt(key)){
+            arr[ y + 1].style.height = arr[y].style.height;
+            arr[ y + 1].style.background = '#077d7d';
+            await timer(ms);
+            arr[ y + 1].style.background = '#0f0';
+            y= y-1;
+        }
+        arr[y+1].style.height = key ;
+        arr[y+1].style.background = '#ff0';
+        await timer(ms);
+
+        arr[x].style.background = '#0f0';
+        arr[y+1].style.background = '#0f0';
+    }
+}
+
 async function qucikSort(divArr, l, h, ms){
     if(l<h){
         pi = await parition(divArr, l, h, ms)
@@ -200,21 +225,22 @@ async function merge(arr,  l,  m, r, ms)
 
 	i = 0;
 	j = 0;
-	k = l;
+    k = l;
 	while (i < n1 && j < n2) 
 	{ 
-        // L[i] == L[l+i]  and R[j]=R[m+1+j]
-		if ( L[i]  <= R[j] ) 
-		{ 
-			arr[k].style.height = `${L[i]}px`; 
-            i++; 
+        // L[i] = arr[l+i]  and R[j]=arr[m+1+j]
+        await timer(ms);
+        if ( L[i]  <= R[j] ) 
+		{
+            arr[k].style.height = `${L[i]}px`; /// main line
+            i++;
 		} 
 		else
-		{ 
-			arr[k].style.height = `${R[j]}px` ; 
-			j++; 
+		{
+            arr[k].style.height = `${R[j]}px` ; // main line
+            j++; 
         }
-		k++; 
+        k++; 
 	} 
 
 	while (i < n1) 
@@ -229,7 +255,8 @@ async function merge(arr,  l,  m, r, ms)
 		arr[k].style.height = `${R[j]}px`; 
 		j++; 
 		k++; 
-	} 
+    } 
+    
 } 
 
 async function mergeSort(arr,  l,  r, ms) 
@@ -240,33 +267,13 @@ async function mergeSort(arr,  l,  r, ms)
 		await mergeSort(arr, l, m, ms); 
 		await mergeSort(arr, m+1, r, ms); 
 		await merge(arr, l, m, r, ms); 
-	} 
+    }
+    await timer(ms);
+    // for(let x=0; x<=r; x++){
+    //     arr[x].style.background = '#0f0';
+    // } 
 } 
     
-
-async function insertionSort(arr, n, ms){
-    let x, key, y;
-    for(x=1;x<n;x++){
-
-        arr[x].style.background = '#ff0';
-        key = arr[x].style.height;
-        await timer(ms);
-        y = x - 1;
-        while( y>=0 && parseInt(arr[y].style.height) > parseInt(key)){
-            arr[ y + 1].style.height = arr[y].style.height;
-            arr[ y + 1].style.background = '#077d7d';
-            await timer(ms);
-            arr[ y + 1].style.background = '#0f0';
-            y= y-1;
-        }
-        arr[y+1].style.height = key ;
-        arr[y+1].style.background = '#ff0';
-        await timer(ms);
-
-        arr[x].style.background = '#f00';
-        arr[y+1].style.background = '#0f0';
-    }
-}
 
 async function sort(){
 
@@ -316,9 +323,9 @@ async function sort(){
 
 //todo
 // ii. make a helper function for swapping and changing colors -- DRY
-// i. correctly implement change colors when swapping or changing in  insertion,  merge sort
+// i. correctly implement change colors when swapping or changing in  merge sort
 // 1. generate only unique random values
 // 2. good coloring on slides
 // 3. Disable "sort" btn and all other things once it has started sorting 
 // 4. DONE --- implement merge sort
-// 5. DONE --- correct implemented QUICK, BUBBLE, HEAP
+// 5. DONE --- correct implemented INSERTION ,QUICK, BUBBLE, HEAP
