@@ -37,6 +37,7 @@ function makeSlides(arr){
     eachWidth = (centerBox.clientWidth - arr.length - 20) / arr.length; // 20px padding of center box
     for( let i=0; i< arr.length; i++){
         const box = document.createElement('div');
+        box.className = 'slide';
         box.style.width = `${eachWidth}px`;
         box.style.height = `${arr[i]}px`;
         box.style.background = '#f00';
@@ -213,7 +214,8 @@ async function merge(arr,  l,  m, r, ms)
 { 
 	let i, j, k; 
 	let n1 = m - l + 1; 
-	let n2 = r - m; 
+    let n2 = r - m; 
+    
 
     let L=[], R=[]; 
     
@@ -228,15 +230,35 @@ async function merge(arr,  l,  m, r, ms)
     k = l;
 	while (i < n1 && j < n2) 
 	{ 
-        // L[i] = arr[l+i]  and R[j]=arr[m+1+j]
+        arr[l + i].style.background = '#077d7d';
+        arr[m + 1 + j].style.background = '#077d7d';
         await timer(ms);
+        arr[l + i].style.background = '#f00';
+        arr[m + 1 + j].style.background = '#f00';
+        await timer(ms);
+
+        // L[i] = arr[l+i]  and R[j]=arr[m+1+j]
         if ( L[i]  <= R[j] ) 
 		{
+            arr[k].style.background = '#b509a0';
+            arr[l + i].style.background = '#b509a0';
+            await timer(ms);
+            arr[k].style.background = '#f00';
+            arr[l + i].style.background = '#f00';
+            await timer(ms);
+
             arr[k].style.height = `${L[i]}px`; /// main line
             i++;
 		} 
 		else
-		{
+        {
+            arr[k].style.background = '#b509a0';
+            arr[m+1+j].style.background = '#b509a0';
+            await timer(ms);
+            arr[k].style.background = '#f00';
+            arr[m+1+j].style.background = '#f00';
+            await timer(ms);
+
             arr[k].style.height = `${R[j]}px` ; // main line
             j++; 
         }
@@ -245,6 +267,21 @@ async function merge(arr,  l,  m, r, ms)
 
 	while (i < n1) 
 	{ 
+        arr[l+i].style.background = '#b509a0';
+        arr[l + i].style.background = '#b509a0';
+        await timer(ms);
+        arr[l+i].style.background = '#f00';
+        arr[l + i].style.background = '#f00';
+        await timer(ms);
+
+        arr[k].style.background = '#b509a0';
+        arr[l + i].style.background = '#b509a0';
+        await timer(ms);
+        arr[k].style.background = '#f00';
+        arr[l + i].style.background = '#f00';
+        await timer(ms);
+
+
 		arr[k].style.height = `${L[i]}px`; 
 		i++; 
 		k++; 
@@ -252,12 +289,28 @@ async function merge(arr,  l,  m, r, ms)
 
 	while (j < n2) 
 	{ 
+        arr[m+1+j].style.background = '#b509a0';
+        arr[m+1+j].style.background = '#b509a0';
+        await timer(ms);
+        arr[m+1+j].style.background = '#f00';
+        arr[m+1+j].style.background = '#f00';
+        await timer(ms);
+
+        arr[k].style.background = '#b509a0';
+        arr[m+1+j].style.background = '#b509a0';
+        await timer(ms);
+        arr[k].style.background = '#f00';
+        arr[m+1+j].style.background = '#f00';
+        await timer(ms);
+
+
 		arr[k].style.height = `${R[j]}px`; 
 		j++; 
 		k++; 
     } 
-    
+        
 } 
+
 
 async function mergeSort(arr,  l,  r, ms) 
 { 
@@ -266,14 +319,10 @@ async function mergeSort(arr,  l,  r, ms)
 		let m = l + parseInt((r-l)/2); 
 		await mergeSort(arr, l, m, ms); 
 		await mergeSort(arr, m+1, r, ms); 
-		await merge(arr, l, m, r, ms); 
+        await merge(arr, l, m, r, ms); 
     }
-    await timer(ms);
-    // for(let x=0; x<=r; x++){
-    //     arr[x].style.background = '#0f0';
-    // } 
 } 
-    
+
 
 async function sort(){
 
@@ -281,6 +330,10 @@ async function sort(){
 
     arraySize = parseInt(document.getElementById('myRange').value);
     var divArr = document.querySelectorAll('#center div');
+    var mainArray = [];
+    for( const a of document.getElementsByClassName('slide')){
+        mainArray.push(a);
+    }
     var n = divArr.length;
     var ms;
     if (n <=200 && n>=100){
@@ -301,8 +354,8 @@ async function sort(){
         await bubbleSort(n, divArr, ms);
     }else if(currentAlgo === 'heap'){
         await heapSort(n, divArr, ms);
-    }else if(currentAlgo === 'merge'){
-        await mergeSort(divArr, 0, n-1, ms);    // mergeSort(arr, l, r, ms);
+    }else if(currentAlgo === 'merge'){   
+        mergeSort(divArr, 0, divArr.length -1, ms);
 
     }else if(currentAlgo === "insertion"){
         await insertionSort(divArr, n, ms);
@@ -324,7 +377,7 @@ async function sort(){
 //todo
 // ii. make a helper function for swapping and changing colors -- DRY
 // i. correctly implement change colors when swapping or changing in  merge sort
-// 1. generate only unique random values
+// 1. generate only unique random values -- CANCELLED
 // 2. good coloring on slides
 // 3. Disable "sort" btn and all other things once it has started sorting 
 // 4. DONE --- implement merge sort
