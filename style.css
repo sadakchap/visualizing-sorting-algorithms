@@ -164,3 +164,8 @@ button#sort:disabled{
       align-items: flex-end;
       padding: 0 20px;
   }
+
+  .disabled{
+      color: #f00 !important;
+      cursor: not-allowed !important;
+  }

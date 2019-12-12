@@ -2,6 +2,12 @@ let currentAlgo;
 let arraySize;
 let arr = [];
 const sortbtn = document.getElementById('sort');
+const sliderInput = document.getElementById('myRange');
+const newArrayBtn = document.getElementById('newArray');
+
+sliderInput.addEventListener("change", () =>{
+    getRandomArray();
+})
 
 function timer(ms) {
     return new Promise(res => setTimeout(res, ms));
@@ -48,7 +54,7 @@ function makeSlides(arr){
 
 }
 
-document.getElementById('newArray').addEventListener('click', getRandomArray)
+document.getElementById('newArray').addEventListener('click', getRandomArray);
 
 function getRandomArray(){
     arraySize = parseInt(document.getElementById('myRange').value); // array length
@@ -62,14 +68,12 @@ function getRandomArray(){
         arr[x] = Math.floor(Math.random() * height) + 10;
     }
     makeSlides(arr);
-}
-
-getRandomArray(); //calling for initail  
+} 
 
 async function swapi(arr, i, j, ms){
     a1 = arr[i];
     a2 = arr[j];
-    // changing colors
+    // changing to selected colors
     a1.style.background = '#077d7d';
     a2.style.background = '#077d7d';
     await timer(ms);
@@ -77,11 +81,11 @@ async function swapi(arr, i, j, ms){
     b = a1.style.height;
     a1.style.height = a2.style.height;
     a2.style.height = b;
-    // changing color after swapping
+    // changing to swapped colors after swapping
     a1.style.background = '#b509a0';
     a2.style.background = '#b509a0';
     await timer(ms);
-    // changing back to normal
+    // changing back to primary color(normal)
     a1.style.background = '#f00';
     a2.style.background = '#f00';
 }
@@ -150,7 +154,7 @@ async function parition(divArr, l, h, ms){
     return (i + 1);
 }
 
-async function bubbleSort(n, divArr, ms){
+async function bubbleSort(divArr, n, ms){
     for(let i=0; i< n-1; i++){
         var c = false;
         for(j=0; j< n-i-1; j++){
@@ -194,7 +198,7 @@ async function heapify(divArr, n, i, ms){
     } 
 }
 
-async function heapSort(n, divArr, ms){
+async function heapSort(divArr, n, ms){
     for (let i = parseInt(n / 2) - 1; i >= 0; i--) 
         await heapify(divArr, n, i, ms ); 
     
@@ -210,56 +214,36 @@ async function heapSort(n, divArr, ms){
 ///////////////////////////////////////////
 
 
-async function merge(arr,  l,  m, r, ms) 
+async function merge(arr,  l,  m, r, ms, isFinalMerge) 
 { 
 	let i, j, k; 
 	let n1 = m - l + 1; 
     let n2 = r - m; 
     
+    const revertColor = isFinalMerge ? '#0f0' : '#f00';
 
-    let L=[], R=[]; 
+    let firstHalf=[], secondHalf=[]; 
     
 	for (i = 0; i < n1; i++) 
-		L.push( parseInt( arr[l + i].style.height ) ); 
+        firstHalf.push( parseInt( arr[l + i].style.height ) ); 
 	for (j = 0; j < n2; j++) 
-        R.push( parseInt( arr[m + 1+ j].style.height ) ); 
+        secondHalf.push( parseInt( arr[m + 1+ j].style.height ) ); 
 
 
 	i = 0;
 	j = 0;
     k = l;
 	while (i < n1 && j < n2) 
-	{ 
-        arr[l + i].style.background = '#077d7d';
-        arr[m + 1 + j].style.background = '#077d7d';
-        await timer(ms);
-        arr[l + i].style.background = '#f00';
-        arr[m + 1 + j].style.background = '#f00';
-        await timer(ms);
-
+	{         
         // L[i] = arr[l+i]  and R[j]=arr[m+1+j]
-        if ( L[i]  <= R[j] ) 
+        if (firstHalf[i] <= secondHalf[j] ) 
 		{
-            arr[k].style.background = '#b509a0';
-            arr[l + i].style.background = '#b509a0';
-            await timer(ms);
-            arr[k].style.background = '#f00';
-            arr[l + i].style.background = '#f00';
-            await timer(ms);
-
-            arr[k].style.height = `${L[i]}px`; /// main line
+            arr[k].style.height = `${firstHalf[i]}px`; /// main line
             i++;
 		} 
 		else
         {
-            arr[k].style.background = '#b509a0';
-            arr[m+1+j].style.background = '#b509a0';
-            await timer(ms);
-            arr[k].style.background = '#f00';
-            arr[m+1+j].style.background = '#f00';
-            await timer(ms);
-
-            arr[k].style.height = `${R[j]}px` ; // main line
+            arr[k].style.height = `${secondHalf[j]}px` ; // main line
             j++; 
         }
         k++; 
@@ -267,44 +251,14 @@ async function merge(arr,  l,  m, r, ms)
 
 	while (i < n1) 
 	{ 
-        arr[l+i].style.background = '#b509a0';
-        arr[l + i].style.background = '#b509a0';
-        await timer(ms);
-        arr[l+i].style.background = '#f00';
-        arr[l + i].style.background = '#f00';
-        await timer(ms);
-
-        arr[k].style.background = '#b509a0';
-        arr[l + i].style.background = '#b509a0';
-        await timer(ms);
-        arr[k].style.background = '#f00';
-        arr[l + i].style.background = '#f00';
-        await timer(ms);
-
-
-		arr[k].style.height = `${L[i]}px`; 
+        arr[k].style.height = `${firstHalf[i]}px`; 
 		i++; 
 		k++; 
 	} 
 
 	while (j < n2) 
 	{ 
-        arr[m+1+j].style.background = '#b509a0';
-        arr[m+1+j].style.background = '#b509a0';
-        await timer(ms);
-        arr[m+1+j].style.background = '#f00';
-        arr[m+1+j].style.background = '#f00';
-        await timer(ms);
-
-        arr[k].style.background = '#b509a0';
-        arr[m+1+j].style.background = '#b509a0';
-        await timer(ms);
-        arr[k].style.background = '#f00';
-        arr[m+1+j].style.background = '#f00';
-        await timer(ms);
-
-
-		arr[k].style.height = `${R[j]}px`; 
+        arr[k].style.height = `${secondHalf[j]}px`; 
 		j++; 
 		k++; 
     } 
@@ -318,67 +272,86 @@ async function mergeSort(arr,  l,  r, ms)
 	{ 
 		let m = l + parseInt((r-l)/2); 
 		await mergeSort(arr, l, m, ms); 
-		await mergeSort(arr, m+1, r, ms); 
-        await merge(arr, l, m, r, ms); 
+        await mergeSort(arr, m+1, r, ms);
+        const isFinalMerge = l+r+1 === arr.length;
+        await merge(arr, l, m, r, ms, isFinalMerge); 
     }
 } 
 
+function delayTime(n){
+    if (n <= 200 && n >= 150){
+        return 5;
+    }
+    else if (n <= 150 && n >= 100) {
+        return 15;
+    } else if (n < 100 && n >= 80) {
+        return 35;
+    } else if (n < 80 && n >= 60) {
+        return 75;
+    } else if (n < 60 && n >= 40) {
+        return 100;
+    } else if (n < 40 && n >= 20) {
+        return 500;
+    } else { // for n<20 && n>4
+        return 1000;
+    }
+}
 
 async function sort(){
 
-    document.getElementById('sort').setAttribute("disabled", "disabled"); // disabling sort btn 
+     // disabling all things
+    document.getElementById('sort').setAttribute("disabled", "disabled");
+    sliderInput.setAttribute("disabled", "disabled");
+    newArrayBtn.setAttribute("disabled", "disabled");
+    sliderInput.className = 'slider disabled';
+    sliderInput.parentNode.className = 'disabled';
+    newArrayBtn.className = 'disabled';
 
-    arraySize = parseInt(document.getElementById('myRange').value);
+    // getting all divs
     var divArr = document.querySelectorAll('#center div');
-    var mainArray = [];
-    for( const a of document.getElementsByClassName('slide')){
-        mainArray.push(a);
-    }
-    var n = divArr.length;
-    var ms;
-    if (n <=200 && n>=100){
-        ms = 5;
-    }else if(n<100 && n>=80){
-        ms = 15;
-    }else if(n<80 && n>=60){
-        ms = 75;
-    }else if(n<60 && n>=40){
-        ms = 100;
-    }else if(n<40 && n>=20){
-        ms = 500;
-    }else{ // for n<20 && n>4
-        ms = 1000;
-    }
     
+    var n = divArr.length;
+    const ms = delayTime(divArr.length);
+    
+    // deciding algorithm function to excute
     if(currentAlgo === 'bubble'){
-        await bubbleSort(n, divArr, ms);
+        await bubbleSort(divArr, n, ms);
     }else if(currentAlgo === 'heap'){
-        await heapSort(n, divArr, ms);
-    }else if(currentAlgo === 'merge'){   
-        mergeSort(divArr, 0, divArr.length -1, ms);
+        await heapSort(divArr, n, ms);
+    }else if(currentAlgo === 'merge'){
+        await mergeSort(divArr, 0, n -1, ms);
 
     }else if(currentAlgo === "insertion"){
         await insertionSort(divArr, n, ms);
     }else if(currentAlgo === 'quick'){
-        await qucikSort(divArr, 0, n-1, ms);
+        await qucikSort(divArr, 0, n -1, ms);
     }else{
         alert('how did you clicked that button');
     }
 
 
+    // turning back to noraml as all are sorted
     await timer(1000);
     backToNormal(divArr, n);
 
-    document.getElementById("sort").removeAttribute("disabled"); // enabling sort btn again 
+     // enabling all things 
+    document.getElementById("sort").removeAttribute("disabled");
+    sliderInput.removeAttribute("disabled");
+    newArrayBtn.removeAttribute("disabled");
+    sliderInput.className = 'slider';
+    sliderInput.parentNode.className = '';
+    newArrayBtn.className = '';
 
 
 }
+
+getRandomArray(); //calling for initail 
 
 //todo
 // ii. make a helper function for swapping and changing colors -- DRY
 // i. correctly implement change colors when swapping or changing in  merge sort
 // 1. generate only unique random values -- CANCELLED
 // 2. good coloring on slides
-// 3. Disable "sort" btn and all other things once it has started sorting 
+// 3. DONE --- Disable "sort" btn and all other things once it has started sorting 
 // 4. DONE --- implement merge sort
 // 5. DONE --- correct implemented INSERTION ,QUICK, BUBBLE, HEAP
