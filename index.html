@@ -20,6 +20,25 @@
 
     <div class="grid-main">
         <aside class="sidebar" id="left">
+            <div class="info" id="heapInfo" style="display: none;">
+                <p>
+                    It is exclusively based on <span class="imp">binary Heap data structure</span>.
+                    It involves finding the largest and sorting it to the end of an unsorted collection.
+                </p>
+            </div>
+            <div class="info" id="bubbleInfo" style="display: none;">
+                <p>
+                    
+                </p>
+            </div>
+            <ul class="algo-overview" style="display: none; transition: .5s;">
+                <li>Time Complexity     : <span id="timeComplex"></span></li>
+                <li>Space Complexity    : <span id="spaceComplex"></span></li>
+                <li>stability           : <span id="stability"></span></li>
+                <li>Internal/External   : <span id="memory"></span></li>
+                <li>Recursive           : <span id="recursive"></span></li>
+                <li>Comparsion          : <span id="swapi"></span></li>
+            </ul>
             <button id="newArray">Generate a Random Array</button>
             <form method="POST">
                 <label for="len">Array Length & speed

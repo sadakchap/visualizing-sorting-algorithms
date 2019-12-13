@@ -135,13 +135,13 @@ button#sort:disabled{
     transition: opacity .2s;
   }
   
-  /* Mouse-over effects */
-  .slider:hover {
+/* Mouse-over effects */
+.slider:hover {
     opacity: 1; /* Fully shown on mouse-over */
-  }
-  
-  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-  .slider::-webkit-slider-thumb {
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 20px;
@@ -151,21 +151,59 @@ button#sort:disabled{
     border: 2px solid #0238ff;
     box-shadow: inset 0 0 2px #0238ff;
     cursor: pointer; /* Cursor on hover */
-  }
-  
-  .slider::-moz-range-thumb {
+}
+
+.slider::-moz-range-thumb {
     width: 25px; /* Set a specific slider handle width */
     height: 25px; /* Slider handle height */
     background: #4CAF50; /* Green background */
     cursor: pointer; /* Cursor on hover */
-  }
-  #center{
-      display: flex;
-      align-items: flex-end;
-      padding: 0 20px;
-  }
+}
+#center{
+    display: flex;
+    align-items: flex-end;
+    padding: 0 20px;
+}
 
-  .disabled{
-      color: #f00 !important;
-      cursor: not-allowed !important;
-  }
+.disabled{
+    color: #f00 !important;
+    cursor: not-allowed !important;
+}
+
+.info{
+    padding: 0 10px;
+    font-family: monospace;
+    color: #ff8115;
+}
+
+.imp{
+    color: orange;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 900;
+    font-size: 1.5em;;
+}
+
+ul.algo-overview{
+    padding: 0;
+    display: flex;
+    margin: 0;
+    flex-direction: column;
+}
+
+ul.algo-overview li{
+    list-style: none;
+    padding: 0 5px;
+    margin: .5em;
+    font-family: monospace;
+    font-size: .89em;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #07f4ff;
+}
+ul.algo-overview li span{
+    color: #0897fd;
+    font-size: 1em;
+    text-transform: none;
+}
+

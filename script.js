@@ -26,6 +26,7 @@ for (const a of algoList){
         //  add selectedAlgo class to clicked element
         a.className = 'selectedAlgo';
         currentAlgo = a.innerText.split(' ')[0].toLowerCase();    // store selectedAlgo choice 
+        document.getElementsByClassName('algo-overview')[0].style.display = "block";
     })
 }
 
@@ -299,6 +300,7 @@ function delayTime(n){
 
 async function sort(){
 
+    document.getElementsByClassName('algo-overview')[0].style.display = "block"; // for algo overview
      // disabling all things
     document.getElementById('sort').setAttribute("disabled", "disabled");
     sliderInput.setAttribute("disabled", "disabled");
@@ -314,10 +316,44 @@ async function sort(){
     const ms = delayTime(divArr.length);
     
     // deciding algorithm function to excute
-    if(currentAlgo === 'bubble'){
+    if (currentAlgo === 'bubble') {// displaying heap sort Info
+        document.getElementById("bubbleInfo").style.display = "block";
+        // setting algo-overview values
+        document.getElementById("timeComplex").innerHTML = "O(n<sup>2</sup>)";
+        document.getElementById("spaceComplex").innerText = "In-Place";
+        document.getElementById("stability").innerText = "Stable";
+        document.getElementById("memory").innerText = "Internal";
+        document.getElementById("recursive").innerText = "Non-Recursive";
+        document.getElementById("swapi").innerText = "Yup!";
+
+        // calling bubbleSortFunction
         await bubbleSort(divArr, n, ms);
+
+        // hiding bubbleInfo info
+        setTimeout(() => {
+            document.getElementById("bubbleInfo").style.display = "none";
+            document.getElementsByClassName('algo-overview')[0].style.display = "none";
+        }, 3000);
     }else if(currentAlgo === 'heap'){
-        await heapSort(divArr, n, ms);
+        // displaying heap sort Info
+        document.getElementById("heapInfo").style.display = "block";
+        // setting algo-overview values
+        document.getElementById("timeComplex").innerText = "O(n logn)";
+        document.getElementById("spaceComplex").innerText = "in-place";
+        document.getElementById("stability").innerText = "Unstable";
+        document.getElementById("memory").innerText = "Internal";
+        document.getElementById("recursive").innerText = "Non-Recursive";
+        document.getElementById("swapi").innerText = "Yup!";
+
+        await heapSort(divArr, n, ms); // calling heapSort
+
+        // hiding heapSort info
+        setTimeout(()=>{
+            document.getElementById("heapInfo").style.display = "none";
+            document.getElementsByClassName('algo-overview')[0].style.display = "none"; 
+        }, 3000);
+        
+        
     }else if(currentAlgo === 'merge'){
         await mergeSort(divArr, 0, n -1, ms);
 
