@@ -298,9 +298,23 @@ function delayTime(n){
     }
 }
 
+function setOverviewInfo(time, space, stable, memory, recursive, comparsion){
+    document.getElementById("timeComplex").innerHTML = time;
+    document.getElementById("spaceComplex").innerText = space;
+    document.getElementById("stability").innerText = stable;
+    document.getElementById("memory").innerText = memory;
+    document.getElementById("recursive").innerText = recursive;
+    document.getElementById("swapi").innerText = comparsion;
+}
+
 async function sort(){
 
-    document.getElementsByClassName('algo-overview')[0].style.display = "block"; // for algo overview
+    // for algo overview
+    document.getElementsByClassName('algo-overview')[0].style.display = "block"; 
+
+    // displaying selected sort Info
+    document.getElementById(currentAlgo + "Info").style.display = "block";
+
      // disabling all things
     document.getElementById('sort').setAttribute("disabled", "disabled");
     sliderInput.setAttribute("disabled", "disabled");
@@ -316,57 +330,47 @@ async function sort(){
     const ms = delayTime(divArr.length);
     
     // deciding algorithm function to excute
-    if (currentAlgo === 'bubble') {// displaying heap sort Info
-        document.getElementById("bubbleInfo").style.display = "block";
+    if (currentAlgo === 'bubble') {
+        
         // setting algo-overview values
-        document.getElementById("timeComplex").innerHTML = "O(n<sup>2</sup>)";
-        document.getElementById("spaceComplex").innerText = "In-Place";
-        document.getElementById("stability").innerText = "Stable";
-        document.getElementById("memory").innerText = "Internal";
-        document.getElementById("recursive").innerText = "Non-Recursive";
-        document.getElementById("swapi").innerText = "Yup!";
+        setOverviewInfo("O(n<sup>2</sup>)", "In-Place", "Stable", "Internal", "Non-Recursive", "Yup!");
 
         // calling bubbleSortFunction
         await bubbleSort(divArr, n, ms);
 
-        // hiding bubbleInfo info
-        setTimeout(() => {
-            document.getElementById("bubbleInfo").style.display = "none";
-            document.getElementsByClassName('algo-overview')[0].style.display = "none";
-        }, 3000);
+        
     }else if(currentAlgo === 'heap'){
-        // displaying heap sort Info
-        document.getElementById("heapInfo").style.display = "block";
+        
         // setting algo-overview values
-        document.getElementById("timeComplex").innerText = "O(n logn)";
-        document.getElementById("spaceComplex").innerText = "in-place";
-        document.getElementById("stability").innerText = "Unstable";
-        document.getElementById("memory").innerText = "Internal";
-        document.getElementById("recursive").innerText = "Non-Recursive";
-        document.getElementById("swapi").innerText = "Yup!";
+        setOverviewInfo("O(n logn)", "In-Place", "UnStable", "Internal", "Non-Recursive", "Yup!");
 
-        await heapSort(divArr, n, ms); // calling heapSort
+        await heapSort(divArr, n, ms); // calling heapSort        
+        
+    } else if (currentAlgo === 'merge') {
 
-        // hiding heapSort info
-        setTimeout(()=>{
-            document.getElementById("heapInfo").style.display = "none";
-            document.getElementsByClassName('algo-overview')[0].style.display = "none"; 
-        }, 3000);
-        
-        
-    }else if(currentAlgo === 'merge'){
+        // setting algo-overview values
+        setOverviewInfo("O(n logn)", "Out-Of-Place", "Stable", "External", "Recursive", "Yup!");
+
         await mergeSort(divArr, 0, n -1, ms);
 
-    }else if(currentAlgo === "insertion"){
+    } else if (currentAlgo === "insertion") {
+
+        // setting algo-overview values
+        setOverviewInfo("O(n<sup>2</sup>)", "In-Place", "Stable", "Internal", "Non-Recursive", "Yup!");
+
         await insertionSort(divArr, n, ms);
     }else if(currentAlgo === 'quick'){
+
+        // setting algo-overview values
+        setOverviewInfo("O(n logn)", "In-Place", "UnStable", "Internal", "Recursive", "Yup!");
+
         await qucikSort(divArr, 0, n -1, ms);
     }else{
         alert('how did you clicked that button');
     }
 
 
-    // turning back to noraml as all are sorted
+    // turning divs color back to noraml as all are sorted
     await timer(1000);
     backToNormal(divArr, n);
 
@@ -377,6 +381,12 @@ async function sort(){
     sliderInput.className = 'slider';
     sliderInput.parentNode.className = '';
     newArrayBtn.className = '';
+
+    // hiding selected sort Info and overview info
+    setTimeout(() => {
+        document.getElementById( currentAlgo + "Info").style.display = "none";
+        document.getElementsByClassName('algo-overview')[0].style.display = "none";
+    }, 500);
 
 
 }
