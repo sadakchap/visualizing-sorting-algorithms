@@ -225,10 +225,15 @@ async function merge(arr,  l,  m, r, ms, isFinalMerge)
 
     let firstHalf=[], secondHalf=[]; 
     
-	for (i = 0; i < n1; i++) 
+	for (i = 0; i < n1; i++){
+        arr[l+i].style.background = '#f0f';
         firstHalf.push( parseInt( arr[l + i].style.height ) ); 
-	for (j = 0; j < n2; j++) 
+    }
+	for (j = 0; j < n2; j++){
+        arr[m+1+j].style.background = '#0ff';
         secondHalf.push( parseInt( arr[m + 1+ j].style.height ) ); 
+    }
+    await timer(ms);
 
 
 	i = 0;
@@ -237,6 +242,7 @@ async function merge(arr,  l,  m, r, ms, isFinalMerge)
 	while (i < n1 && j < n2) 
 	{         
         // L[i] = arr[l+i]  and R[j]=arr[m+1+j]
+
         if (firstHalf[i] <= secondHalf[j] ) 
 		{
             arr[k].style.height = `${firstHalf[i]}px`; /// main line
@@ -247,12 +253,24 @@ async function merge(arr,  l,  m, r, ms, isFinalMerge)
             arr[k].style.height = `${secondHalf[j]}px` ; // main line
             j++; 
         }
+        if(isFinalMerge){
+            arr[k].style.background = revertColor;
+        }else{
+            arr[k].style.background = '#f00';
+        }
+        await timer(ms);
         k++; 
 	} 
 
 	while (i < n1) 
 	{ 
         arr[k].style.height = `${firstHalf[i]}px`; 
+        if (isFinalMerge) {
+            arr[k].style.background = revertColor;
+        }else{
+            arr[k].style.background = '#f00';
+        }
+        await timer(ms);
 		i++; 
 		k++; 
 	} 
@@ -260,14 +278,27 @@ async function merge(arr,  l,  m, r, ms, isFinalMerge)
 	while (j < n2) 
 	{ 
         arr[k].style.height = `${secondHalf[j]}px`; 
+        if (isFinalMerge) {
+            arr[k].style.background = revertColor;
+        }else{
+            arr[k].style.background = '#f00';
+        }
+        await timer(ms);
 		j++; 
 		k++; 
     } 
+
+    for (i = 0; i < n1; i++) {
+        arr[l + i].style.background = '#f00';
+    }
+    for (j = 0; j < n2; j++) {
+        arr[m + 1 + j].style.background = '#f00';
+    }
         
 } 
 
 
-async function mergeSort(arr,  l,  r, ms) 
+async function mergeSort(arr,  l,  r, ms)
 { 
 	if (l < r) 
 	{ 
@@ -277,6 +308,10 @@ async function mergeSort(arr,  l,  r, ms)
         const isFinalMerge = l+r+1 === arr.length;
         await merge(arr, l, m, r, ms, isFinalMerge); 
     }
+    // await timer(ms);
+    // for (let x = l; x <= r; x++) {
+    //     arr[x].style.background = '#0f0';
+    // }
 } 
 
 function delayTime(n){
@@ -305,6 +340,14 @@ function setOverviewInfo(time, space, stable, memory, recursive, comparsion){
     document.getElementById("memory").innerText = memory;
     document.getElementById("recursive").innerText = recursive;
     document.getElementById("swapi").innerText = comparsion;
+}
+function removeOverviewInfo(){
+    document.getElementById("timeComplex").innerHTML = '';
+    document.getElementById("spaceComplex").innerText = '';
+    document.getElementById("stability").innerText = '';
+    document.getElementById("memory").innerText = '';
+    document.getElementById("recursive").innerText = '';
+    document.getElementById("swapi").innerText = '';
 }
 
 async function sort(){
@@ -386,17 +429,19 @@ async function sort(){
     setTimeout(() => {
         document.getElementById( currentAlgo + "Info").style.display = "none";
         document.getElementsByClassName('algo-overview')[0].style.display = "none";
-    }, 500);
+    }, 100);
 
+    // remove overview Info
+    removeOverviewInfo();
 
 }
 
 getRandomArray(); //calling for initail 
 
 //todo
-// ii. make a helper function for swapping and changing colors -- DRY
+// ii. DONE --- make a helper function for swapping and changing colors -- DRY
 // i. correctly implement change colors when swapping or changing in  merge sort
-// 1. generate only unique random values -- CANCELLED
+// 1. CANCELLED --- generate only unique random values 
 // 2. good coloring on slides
 // 3. DONE --- Disable "sort" btn and all other things once it has started sorting 
 // 4. DONE --- implement merge sort
