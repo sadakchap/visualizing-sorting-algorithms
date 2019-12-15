@@ -5,9 +5,7 @@ const sortbtn = document.getElementById('sort');
 const sliderInput = document.getElementById('myRange');
 const newArrayBtn = document.getElementById('newArray');
 
-sliderInput.addEventListener("change", () =>{
-    getRandomArray();
-})
+sliderInput.addEventListener("input", getRandomArray);
 
 function timer(ms) {
     return new Promise(res => setTimeout(res, ms));
@@ -61,7 +59,6 @@ function getRandomArray(){
     arraySize = parseInt(document.getElementById('myRange').value); // array length
     // get center box
     centerBox = document.getElementById('center');
-    console.log(`new random array size ${arraySize}`);
     height = centerBox.clientHeight - 15 ;
     
     arr = [];
@@ -215,98 +212,77 @@ async function heapSort(divArr, n, ms){
 ///////////////////////////////////////////
 
 
-async function merge(arr,  l,  m, r, ms, isFinalMerge) 
+async function merge(arr,  l,  m, r, isFinalMerge, animations)
 { 
 	let i, j, k; 
 	let n1 = m - l + 1; 
     let n2 = r - m; 
-    
-    const revertColor = isFinalMerge ? '#0f0' : '#f00';
 
     let firstHalf=[], secondHalf=[]; 
+    for (i = 0; i < n1; i++) {
+        firstHalf.push(arr[l+i]);        
+    }
+    for (j = 0; j < n1; j++) {
+        secondHalf.push(arr[m+1+j]);        
+    }
     
-	for (i = 0; i < n1; i++){
-        arr[l+i].style.background = '#f0f';
-        firstHalf.push( parseInt( arr[l + i].style.height ) ); 
-    }
-	for (j = 0; j < n2; j++){
-        arr[m+1+j].style.background = '#0ff';
-        secondHalf.push( parseInt( arr[m + 1+ j].style.height ) ); 
-    }
-    await timer(ms);
-
-
 	i = 0;
 	j = 0;
     k = l;
-	while (i < n1 && j < n2) 
+    while (i < n1 && j < n2) 
 	{         
-        // L[i] = arr[l+i]  and R[j]=arr[m+1+j]
+        // firstHalf[i] = arr[l+i]  and secondHalf[j]=arr[m+1+j]
+        animations.push([l+i, m+1+j]);
+        animations.push([l+i, m+1+j]);
 
         if (firstHalf[i] <= secondHalf[j] ) 
 		{
-            arr[k].style.height = `${firstHalf[i]}px`; /// main line
+            animations.push([l+i, firstHalf[i]]);
+            arr[k] = firstHalf[i]; /// main line
             i++;
 		} 
 		else
         {
-            arr[k].style.height = `${secondHalf[j]}px` ; // main line
+            animations.push([m+1+j, secondHalf[j]]);
+            arr[k] = secondHalf[j] ; // main line
             j++; 
         }
-        if(isFinalMerge){
-            arr[k].style.background = revertColor;
-        }else{
-            arr[k].style.background = '#f00';
-        }
-        await timer(ms);
         k++; 
 	} 
 
 	while (i < n1) 
 	{ 
-        arr[k].style.height = `${firstHalf[i]}px`; 
-        if (isFinalMerge) {
-            arr[k].style.background = revertColor;
-        }else{
-            arr[k].style.background = '#f00';
-        }
-        await timer(ms);
+        animations.push([l+i, l+i]);
+        animations.push([l+i, l+i]);
+        animations.push([l+i, firstHalf[i]]);
+
+        arr[k] = firstHalf[i]; 
 		i++; 
 		k++; 
 	} 
 
 	while (j < n2) 
 	{ 
-        arr[k].style.height = `${secondHalf[j]}px`; 
-        if (isFinalMerge) {
-            arr[k].style.background = revertColor;
-        }else{
-            arr[k].style.background = '#f00';
-        }
-        await timer(ms);
+        animations.push([m+1+j, m+1+j]);
+        animations.push([m+1+j, m+1+j]);
+        animations.push([m+1+j, secondHalf[j]]);
+        arr[k] = secondHalf[j]; 
 		j++; 
 		k++; 
     } 
-
-    for (i = 0; i < n1; i++) {
-        arr[l + i].style.background = '#f00';
-    }
-    for (j = 0; j < n2; j++) {
-        arr[m + 1 + j].style.background = '#f00';
-    }
         
 } 
 
 
-async function mergeSort(arr,  l,  r, ms)
+async function mergeSort(arr,  l,  r, animations)
 { 
 	if (l < r) 
 	{ 
 		let m = l + parseInt((r-l)/2); 
-		await mergeSort(arr, l, m, ms); 
-        await mergeSort(arr, m+1, r, ms);
+		await mergeSort(arr, l, m, animations); 
+        await mergeSort(arr, m+1, r, animations);
         const isFinalMerge = l+r+1 === arr.length;
-        await merge(arr, l, m, r, ms, isFinalMerge); 
+        await merge(arr, l, m, r, isFinalMerge, animations); 
     }
     // await timer(ms);
     // for (let x = l; x <= r; x++) {
@@ -394,7 +370,34 @@ async function sort(){
         // setting algo-overview values
         setOverviewInfo("O(n logn)", "Out-Of-Place", "Stable", "External", "Recursive", "Yup!");
 
-        await mergeSort(divArr, 0, n -1, ms);
+        const animations = [];
+        const realArray = [];
+        for (const elm of document.getElementsByClassName('slide')) {
+            realArray.push(parseInt(elm.style.height));
+        };
+
+        await mergeSort(realArray, 0, realArray.length -1, animations);
+        console.log(animations);
+
+        for (let x = 0; x < animations.length; x++) {
+            const arrayBars = document.getElementsByClassName('slide');
+            const isColorChange = x % 3 !== 2;
+            if(isColorChange){
+                const [barOneIdx, barTwoIdx] = animations[x];
+                const barOneStyle = arrayBars[barOneIdx].style;
+                const barTwoStyle = arrayBars[barTwoIdx].style;
+                const color = x % 3 === 0 ? '#077d7d' : '#f00';
+                barOneStyle.background = color;
+                barTwoStyle.background = color;
+                await timer(ms);
+            }else{
+
+                const [barOneIdx, newHeight] = animations[x];
+                const barOneStyle = arrayBars[barOneIdx].style;
+                barOneStyle.height = `${newHeight}px`;
+            }
+        }
+
 
     } else if (currentAlgo === "insertion") {
 
