@@ -4,6 +4,11 @@ let arr = [];
 const sortbtn = document.getElementById('sort');
 const sliderInput = document.getElementById('myRange');
 const newArrayBtn = document.getElementById('newArray');
+const PRIMARY_COLOR = '#f00';
+const SELECTED_COLOR = '#41EAD4';
+const SWAPPED_COLOR = '#454ADE';
+const FINAL_COLOR = '#89FC00';
+const SELCETED_KEY_COLOR = '#FBFF12';
 
 sliderInput.addEventListener("input", getRandomArray);
 
@@ -27,7 +32,7 @@ for (const a of algoList){
         document.getElementsByClassName('algo-overview')[0].style.display = "block";
     })
 }
-
+// for making slides(drawing on page)
 function makeSlides(arr){
     centerBox = document.getElementById('center');
 
@@ -45,7 +50,7 @@ function makeSlides(arr){
         box.className = 'slide';
         box.style.width = `${eachWidth}px`;
         box.style.height = `${arr[i]}px`;
-        box.style.background = '#f00';
+        box.style.background = PRIMARY_COLOR;
         box.style.margin = '0 1px 0 0';
         centerBox.appendChild(box);
     }
@@ -53,8 +58,10 @@ function makeSlides(arr){
 
 }
 
+// for making new array on click "Generate New Array" btn
 document.getElementById('newArray').addEventListener('click', getRandomArray);
 
+// generating new array
 function getRandomArray(){
     arraySize = parseInt(document.getElementById('myRange').value); // array length
     // get center box
@@ -68,55 +75,235 @@ function getRandomArray(){
     makeSlides(arr);
 } 
 
+getRandomArray(); //calling for initail
+
+////////////////////////////
+//// main sort function ////
+///////////////////////////
+async function sort() {
+
+    // for algo overview
+    document.getElementsByClassName('algo-overview')[0].style.display = "block";
+
+    // displaying selected sort Info
+    document.getElementById(currentAlgo + "Info").style.display = "block";
+
+    // disabling all things
+    document.getElementById('sort').setAttribute("disabled", "disabled");
+    sliderInput.setAttribute("disabled", "disabled");
+    newArrayBtn.setAttribute("disabled", "disabled");
+    sliderInput.className = 'slider disabled';
+    sliderInput.parentNode.className = 'disabled';
+    newArrayBtn.className = 'disabled';
+
+    // getting all divs
+    var divArr = document.getElementsByClassName('slide');
+
+    var n = divArr.length;
+    const ms = delayTime(divArr.length);
+
+    // deciding algorithm function to excute
+    if (currentAlgo === 'bubble') {
+
+        // setting algo-overview values
+        setOverviewInfo("O(n<sup>2</sup>)", "In-Place", "Stable", "Internal", "Non-Recursive", "Yup!");
+
+        // calling bubbleSortFunction
+        await bubbleSort(divArr, n, ms);
+
+
+    } else if (currentAlgo === 'heap') {
+
+        // setting algo-overview values
+        setOverviewInfo("O(n logn)", "In-Place", "UnStable", "Internal", "Non-Recursive", "Yup!");
+        setNote('It first builds a <span>MAX HEAP</span>, then delete maximum valued element from it and put it at the end of collection. It recursively repeat this until whoel collection is sorted.')
+        await heapSort(divArr, n, ms); // calling heapSort        
+
+    } else if (currentAlgo === 'merge') {
+
+        // setting algo-overview values
+        setOverviewInfo("O(n logn)", "Out-Of-Place", "Stable", "External", "Recursive", "Yup!");
+
+        setNote('If you look closely, you will notice that at some moments it has duplicated values, becoz in merge SOrt it never swaps values instead it <span>OVERWRITES</span> them!!!');
+
+        const animations = [];
+        const realArray = [];
+        for (const elm of document.getElementsByClassName('slide')) {
+            realArray.push(parseInt(elm.style.height));
+        };
+
+        const auxiliaryArray = realArray.slice();
+        mergeSort(realArray, 0, realArray.length - 1, auxiliaryArray, animations);
+
+
+        for (let x = 0; x < animations.length; x++) {
+            const arrayBars = document.getElementsByClassName('slide');
+            const isColorChange = x % 3 !== 2;
+            if (isColorChange) {
+                const [barOneIdx, barTwoIdx] = animations[x];
+                const barOneStyle = arrayBars[barOneIdx].style;
+                const barTwoStyle = arrayBars[barTwoIdx].style;
+                const color = x % 3 === 0 ? SELECTED_COLOR : PRIMARY_COLOR;
+                barOneStyle.background = color;
+                barTwoStyle.background = color;
+                await timer(ms);
+            } else {
+
+                const [barOneIdx, newHeight] = animations[x];
+                const barOneStyle = arrayBars[barOneIdx].style;
+                barOneStyle.height = `${newHeight}px`;
+            }
+        }
+
+    } else if (currentAlgo === "insertion") {
+
+        // setting algo-overview values
+        setOverviewInfo("O(n<sup>2</sup>)", "In-Place", "Stable", "Internal", "Non-Recursive", "Yup!");
+        setNote('If you look closely, you can see that a some moments, It has duplicated values becoz it overwrite elements.')
+        await insertionSort(divArr, n, ms);
+    } else if (currentAlgo === 'quick') {
+
+        // setting algo-overview values
+        setOverviewInfo("O(n logn)", "In-Place", "UnStable", "Internal", "Recursive", "Yup!");
+
+        setNote('In this, I have always picked <span>LAST</span> element as pivot.')
+        await qucikSort(divArr, 0, n - 1, ms);
+    } else {
+        alert('how did you clicked that button');
+    }
+
+
+    // turning divs color back to noraml as all are sorted
+    await timer(1000);
+    backToNormal(divArr, n);
+
+    // enabling all things 
+    document.getElementById("sort").removeAttribute("disabled");
+    sliderInput.removeAttribute("disabled");
+    newArrayBtn.removeAttribute("disabled");
+    sliderInput.className = 'slider';
+    sliderInput.parentNode.className = '';
+    newArrayBtn.className = '';
+
+    // hiding selected sort Info and overview info
+
+    document.getElementById(currentAlgo + "Info").style.display = "none";
+    document.getElementsByClassName('algo-overview')[0].style.display = "none";
+
+
+    // remove overview Info
+    removeOverviewInfo();
+
+    removeNote();
+
+}
+
+// for swapping two div's height and changing color
 async function swapi(arr, i, j, ms){
     a1 = arr[i];
     a2 = arr[j];
     // changing to selected colors
-    a1.style.background = '#077d7d';
-    a2.style.background = '#077d7d';
+    a1.style.background = SELECTED_COLOR;
+    a2.style.background = SELECTED_COLOR;
     await timer(ms);
     // swapping divs heights
     b = a1.style.height;
     a1.style.height = a2.style.height;
     a2.style.height = b;
     // changing to swapped colors after swapping
-    a1.style.background = '#b509a0';
-    a2.style.background = '#b509a0';
+    a1.style.background = SWAPPED_COLOR;
+    a2.style.background = SWAPPED_COLOR;
     await timer(ms);
     // changing back to primary color(normal)
-    a1.style.background = '#f00';
-    a2.style.background = '#f00';
+    a1.style.background = PRIMARY_COLOR;
+    a2.style.background = PRIMARY_COLOR;
 }
 
+/// back to normal color after sorting
 function backToNormal(arr, n){
     for(let x=0; x<n; x++){
-        arr[x].style.background = '#f00';
+        arr[x].style.background = PRIMARY_COLOR;
     }
 }
 
+// decide delay time as per length of array
+function delayTime(n) {
+    if (n <= 200 && n >= 150) {
+        return 5;
+    }
+    else if (n <= 150 && n >= 100) {
+        return 15;
+    } else if (n < 100 && n >= 80) {
+        return 35;
+    } else if (n < 80 && n >= 60) {
+        return 75;
+    } else if (n < 60 && n >= 40) {
+        return 100;
+    } else if (n < 40 && n >= 20) {
+        return 500;
+    } else { // for n<20 && n>4
+        return 1000;
+    }
+}
+
+// set overview Info for selected algorithm
+function setOverviewInfo(time, space, stable, memory, recursive, comparsion) {
+    document.getElementById("timeComplex").innerHTML = time;
+    document.getElementById("spaceComplex").innerText = space;
+    document.getElementById("stability").innerText = stable;
+    document.getElementById("memory").innerText = memory;
+    document.getElementById("recursive").innerText = recursive;
+    document.getElementById("swapi").innerText = comparsion;
+}
+// remove overview Info for selected algorithm
+function removeOverviewInfo() {
+    document.getElementById("timeComplex").innerHTML = '';
+    document.getElementById("spaceComplex").innerText = '';
+    document.getElementById("stability").innerText = '';
+    document.getElementById("memory").innerText = '';
+    document.getElementById("recursive").innerText = '';
+    document.getElementById("swapi").innerText = '';
+}
+
+function setNote(message){
+    const noteElement = document.getElementById('note');
+    noteElement.children[0].innerHTML = "NOTE : "+message;
+    noteElement.style.visibility = 'visible';
+
+}
+
+function removeNote(){
+    const noteElement = document.getElementById('note');
+    noteElement.children[0].innerHTML = '';
+    noteElement.style.visibility = 'hidden';
+}
+
+/// all the algorithms
 
 async function insertionSort(arr, n, ms){
     let x, key, y;
     for(x=1;x<n;x++){
-
-        arr[x].style.background = '#ff0';
+        // selected key
+        arr[x].style.background = SELCETED_KEY_COLOR;
         key = arr[x].style.height;
         await timer(ms);
         y = x - 1;
         while( y>=0 && parseInt(arr[y].style.height) > parseInt(key)){
             arr[ y + 1].style.height = arr[y].style.height;
-            arr[ y + 1].style.background = '#077d7d';
+            arr[ y + 1].style.background = SELECTED_COLOR;
             await timer(ms);
-            arr[ y + 1].style.background = '#0f0';
+            arr[ y + 1].style.background = FINAL_COLOR;
             y= y-1;
         }
         arr[y+1].style.height = key ;
-        arr[y+1].style.background = '#ff0';
+        arr[y+1].style.background = SELCETED_KEY_COLOR;
         await timer(ms);
 
-        arr[x].style.background = '#0f0';
-        arr[y+1].style.background = '#0f0';
+        arr[x].style.background = FINAL_COLOR;
+        arr[y+1].style.background = FINAL_COLOR;
     }
+    // for already sorted array, as it will leave 0th index
+    arr[0].style.background = FINAL_COLOR;
 }
 
 async function qucikSort(divArr, l, h, ms){
@@ -126,13 +313,13 @@ async function qucikSort(divArr, l, h, ms){
         await qucikSort(divArr, pi+1, h, ms);
     }
     for(let x=0; x<=h; x++){
-        divArr[x].style.background = '#0f0';
+        divArr[x].style.background = FINAL_COLOR;
     }
 }
 
 async function parition(divArr, l, h, ms){
 
-    divArr[h].style.background = '#ff0'; // yellow key, pivot color
+    divArr[h].style.background = SELCETED_KEY_COLOR; // yellow key, pivot color
     let pi = parseInt(divArr[h].style.height);  
  
     let i = (l - 1)  // Index of smaller element
@@ -148,7 +335,7 @@ async function parition(divArr, l, h, ms){
     }
 
     await swapi(divArr, i+1, h, ms); 
-    divArr[h].style.background = '#f00';
+    divArr[h].style.background = PRIMARY_COLOR;
     return (i + 1);
 }
 
@@ -165,12 +352,12 @@ async function bubbleSort(divArr, n, ms){
             
         }
         // changing color since this div is in right place now
-        divArr[j].style.background = '#0f0';
+        divArr[j].style.background = FINAL_COLOR;
 
         if (!c){
             // all array is sorted now
             for(let x=0; x<i; x++){
-                divArr[x].style.background = '#0f0';
+                divArr[x].style.background = FINAL_COLOR;
             }
             break;
         }
@@ -204,248 +391,62 @@ async function heapSort(divArr, n, ms){
     { 
         await swapi(divArr, 0, i, ms);
         // this div is sorted so green
-        divArr[i].style.background = '#0f0';
+        divArr[i].style.background = FINAL_COLOR;
         await heapify(divArr, i, 0, ms ); 
     }
 }
 
-///////////////////////////////////////////
+function mergeSort(realArray, startIdx, endIdx, auxiliaryArray, animations) {
+    if (startIdx === endIdx) return;
+    const middleIdx = Math.floor((startIdx + endIdx) / 2);
+    mergeSort(auxiliaryArray, startIdx, middleIdx, realArray, animations);
+    mergeSort(auxiliaryArray, middleIdx + 1, endIdx, realArray, animations);
+    doMerge(realArray, startIdx, endIdx, middleIdx, auxiliaryArray, animations);
+}
 
+function doMerge(realArray, startIdx, endIdx, middleIdx, auxiliaryArray, animations) {
+    let i = startIdx;
+    let j = middleIdx + 1;
+    let k = startIdx;
 
-async function merge(arr,  l,  m, r, isFinalMerge, animations)
-{ 
-	let i, j, k; 
-	let n1 = m - l + 1; 
-    let n2 = r - m; 
+    while (i <= middleIdx && j <= endIdx) {
+        animations.push([i, j]);
+        animations.push([i, j]);
+        if (auxiliaryArray[i] <= auxiliaryArray[j]) {
 
-    let firstHalf=[], secondHalf=[]; 
-    for (i = 0; i < n1; i++) {
-        firstHalf.push(arr[l+i]);        
-    }
-    for (j = 0; j < n1; j++) {
-        secondHalf.push(arr[m+1+j]);        
-    }
-    
-	i = 0;
-	j = 0;
-    k = l;
-    while (i < n1 && j < n2) 
-	{         
-        // firstHalf[i] = arr[l+i]  and secondHalf[j]=arr[m+1+j]
-        animations.push([l+i, m+1+j]);
-        animations.push([l+i, m+1+j]);
+            animations.push([k, auxiliaryArray[i]]);
 
-        if (firstHalf[i] <= secondHalf[j] ) 
-		{
-            animations.push([l+i, firstHalf[i]]);
-            arr[k] = firstHalf[i]; /// main line
-            i++;
-		} 
-		else
-        {
-            animations.push([m+1+j, secondHalf[j]]);
-            arr[k] = secondHalf[j] ; // main line
-            j++; 
+            realArray[k++] = auxiliaryArray[i++];
+        } else {
+
+            animations.push([k, auxiliaryArray[j]]);
+
+            realArray[k++] = auxiliaryArray[j++];
         }
-        k++; 
-	} 
-
-	while (i < n1) 
-	{ 
-        animations.push([l+i, l+i]);
-        animations.push([l+i, l+i]);
-        animations.push([l+i, firstHalf[i]]);
-
-        arr[k] = firstHalf[i]; 
-		i++; 
-		k++; 
-	} 
-
-	while (j < n2) 
-	{ 
-        animations.push([m+1+j, m+1+j]);
-        animations.push([m+1+j, m+1+j]);
-        animations.push([m+1+j, secondHalf[j]]);
-        arr[k] = secondHalf[j]; 
-		j++; 
-		k++; 
-    } 
-        
-} 
-
-
-async function mergeSort(arr,  l,  r, animations)
-{ 
-	if (l < r) 
-	{ 
-		let m = l + parseInt((r-l)/2); 
-		await mergeSort(arr, l, m, animations); 
-        await mergeSort(arr, m+1, r, animations);
-        const isFinalMerge = l+r+1 === arr.length;
-        await merge(arr, l, m, r, isFinalMerge, animations); 
     }
-    // await timer(ms);
-    // for (let x = l; x <= r; x++) {
-    //     arr[x].style.background = '#0f0';
-    // }
-} 
-
-function delayTime(n){
-    if (n <= 200 && n >= 150){
-        return 5;
+    while (i <= middleIdx) {
+        animations.push([i, i]);
+        animations.push([i, i]);
+        animations.push([k, auxiliaryArray[i]]);
+        realArray[k++] = auxiliaryArray[i++];
     }
-    else if (n <= 150 && n >= 100) {
-        return 15;
-    } else if (n < 100 && n >= 80) {
-        return 35;
-    } else if (n < 80 && n >= 60) {
-        return 75;
-    } else if (n < 60 && n >= 40) {
-        return 100;
-    } else if (n < 40 && n >= 20) {
-        return 500;
-    } else { // for n<20 && n>4
-        return 1000;
+    while (j <= endIdx) {
+        animations.push([j, j]);
+        animations.push([j, j]);
+        animations.push([k, auxiliaryArray[j]]);
+        realArray[k++] = auxiliaryArray[j++];
     }
 }
 
-function setOverviewInfo(time, space, stable, memory, recursive, comparsion){
-    document.getElementById("timeComplex").innerHTML = time;
-    document.getElementById("spaceComplex").innerText = space;
-    document.getElementById("stability").innerText = stable;
-    document.getElementById("memory").innerText = memory;
-    document.getElementById("recursive").innerText = recursive;
-    document.getElementById("swapi").innerText = comparsion;
-}
-function removeOverviewInfo(){
-    document.getElementById("timeComplex").innerHTML = '';
-    document.getElementById("spaceComplex").innerText = '';
-    document.getElementById("stability").innerText = '';
-    document.getElementById("memory").innerText = '';
-    document.getElementById("recursive").innerText = '';
-    document.getElementById("swapi").innerText = '';
-}
 
-async function sort(){
-
-    // for algo overview
-    document.getElementsByClassName('algo-overview')[0].style.display = "block"; 
-
-    // displaying selected sort Info
-    document.getElementById(currentAlgo + "Info").style.display = "block";
-
-     // disabling all things
-    document.getElementById('sort').setAttribute("disabled", "disabled");
-    sliderInput.setAttribute("disabled", "disabled");
-    newArrayBtn.setAttribute("disabled", "disabled");
-    sliderInput.className = 'slider disabled';
-    sliderInput.parentNode.className = 'disabled';
-    newArrayBtn.className = 'disabled';
-
-    // getting all divs
-    var divArr = document.querySelectorAll('#center div');
-    
-    var n = divArr.length;
-    const ms = delayTime(divArr.length);
-    
-    // deciding algorithm function to excute
-    if (currentAlgo === 'bubble') {
-        
-        // setting algo-overview values
-        setOverviewInfo("O(n<sup>2</sup>)", "In-Place", "Stable", "Internal", "Non-Recursive", "Yup!");
-
-        // calling bubbleSortFunction
-        await bubbleSort(divArr, n, ms);
-
-        
-    }else if(currentAlgo === 'heap'){
-        
-        // setting algo-overview values
-        setOverviewInfo("O(n logn)", "In-Place", "UnStable", "Internal", "Non-Recursive", "Yup!");
-
-        await heapSort(divArr, n, ms); // calling heapSort        
-        
-    } else if (currentAlgo === 'merge') {
-
-        // setting algo-overview values
-        setOverviewInfo("O(n logn)", "Out-Of-Place", "Stable", "External", "Recursive", "Yup!");
-
-        const animations = [];
-        const realArray = [];
-        for (const elm of document.getElementsByClassName('slide')) {
-            realArray.push(parseInt(elm.style.height));
-        };
-
-        await mergeSort(realArray, 0, realArray.length -1, animations);
-        console.log(animations);
-
-        for (let x = 0; x < animations.length; x++) {
-            const arrayBars = document.getElementsByClassName('slide');
-            const isColorChange = x % 3 !== 2;
-            if(isColorChange){
-                const [barOneIdx, barTwoIdx] = animations[x];
-                const barOneStyle = arrayBars[barOneIdx].style;
-                const barTwoStyle = arrayBars[barTwoIdx].style;
-                const color = x % 3 === 0 ? '#077d7d' : '#f00';
-                barOneStyle.background = color;
-                barTwoStyle.background = color;
-                await timer(ms);
-            }else{
-
-                const [barOneIdx, newHeight] = animations[x];
-                const barOneStyle = arrayBars[barOneIdx].style;
-                barOneStyle.height = `${newHeight}px`;
-            }
-        }
-
-
-    } else if (currentAlgo === "insertion") {
-
-        // setting algo-overview values
-        setOverviewInfo("O(n<sup>2</sup>)", "In-Place", "Stable", "Internal", "Non-Recursive", "Yup!");
-
-        await insertionSort(divArr, n, ms);
-    }else if(currentAlgo === 'quick'){
-
-        // setting algo-overview values
-        setOverviewInfo("O(n logn)", "In-Place", "UnStable", "Internal", "Recursive", "Yup!");
-
-        await qucikSort(divArr, 0, n -1, ms);
-    }else{
-        alert('how did you clicked that button');
-    }
-
-
-    // turning divs color back to noraml as all are sorted
-    await timer(1000);
-    backToNormal(divArr, n);
-
-     // enabling all things 
-    document.getElementById("sort").removeAttribute("disabled");
-    sliderInput.removeAttribute("disabled");
-    newArrayBtn.removeAttribute("disabled");
-    sliderInput.className = 'slider';
-    sliderInput.parentNode.className = '';
-    newArrayBtn.className = '';
-
-    // hiding selected sort Info and overview info
-    setTimeout(() => {
-        document.getElementById( currentAlgo + "Info").style.display = "none";
-        document.getElementsByClassName('algo-overview')[0].style.display = "none";
-    }, 100);
-
-    // remove overview Info
-    removeOverviewInfo();
-
-}
-
-getRandomArray(); //calling for initail 
+/////////////////////////////////////////// XXXXXX /////////////////////////////////////////////////////////
+ 
 
 //todo
 // ii. DONE --- make a helper function for swapping and changing colors -- DRY
-// i. correctly implement change colors when swapping or changing in  merge sort
+// i. CANCELLED --- (as it NEVER swaps but overwrites values!!!)correctly implement change colors when swapping or changing in  merge sort
 // 1. CANCELLED --- generate only unique random values 
-// 2. good coloring on slides
+// 2. DONE --- good coloring on slides
 // 3. DONE --- Disable "sort" btn and all other things once it has started sorting 
 // 4. DONE --- implement merge sort
 // 5. DONE --- correct implemented INSERTION ,QUICK, BUBBLE, HEAP
