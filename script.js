@@ -7,7 +7,7 @@ const newArrayBtn = document.getElementById('newArray');
 const PRIMARY_COLOR = '#f00';
 const SELECTED_COLOR = '#41EAD4';
 const SWAPPED_COLOR = '#454ADE';
-const FINAL_COLOR = '#89FC00';
+const FINAL_COLOR = '#0f0';
 const SELCETED_KEY_COLOR = '#FBFF12';
 
 sliderInput.addEventListener("input", getRandomArray);
@@ -116,7 +116,7 @@ async function sort() {
 
         // setting algo-overview values
         setOverviewInfo("O(n logn)", "In-Place", "UnStable", "Internal", "Non-Recursive", "Yup!");
-        setNote('It first builds a <span>MAX HEAP</span>, then delete maximum valued element from it and put it at the end of collection. It recursively repeat this until whoel collection is sorted.')
+        setNote('It first builds a <span>MAX HEAP</span>, then delete maximum valued element from it and put it at the end of collection. It recursively repeat this until whole collection is sorted.')
         await heapSort(divArr, n, ms); // calling heapSort        
 
     } else if (currentAlgo === 'merge') {
